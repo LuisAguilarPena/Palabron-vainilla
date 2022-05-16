@@ -30,14 +30,40 @@ const dictionary = [
   "anime"
 ]
 
+const numberOfRows = document.querySelectorAll(".row").length;
+
 const winningWord = "daras" // randomize, might be useful to create a list of valid winning words
 
 let currentWord = "";
 
+let gameOver = false;
+
 let attemptNumber = 1; // current attempt, number of attempts is number of rows
 
 
+
+//! Utility functions
+const deletion = (key, prevTile, activeTile, activeRow) => {
+  // Delete letters that are not the last letter in the word
+  if(key === "Backspace" && prevTile) { 
+    prevTile.setAttribute("letter", "");
+    prevTile.innerHTML = "";
+    currentWord = currentWord.slice(0, -1);
+  }
+
+  // Delete the last letter in the word
+  if(key === "Backspace" && !activeTile) {
+    const emptyLastTile = activeRow.querySelector(":nth-child(5)");
+    emptyLastTile.setAttribute("letter", "");
+    emptyLastTile.innerHTML = "";
+    currentWord = currentWord.slice(0, -1);
+  }
+}
+
+
 document.addEventListener('keydown', (event) => { // add check for keys that are not being used so nothing gets triggered
+  if(gameOver) return;
+
   let activeRow = document.querySelector("[active]") 
   const activeTile = activeRow.querySelector("[letter='']")
   const prevTile = activeTile?.previousElementSibling; 
@@ -49,27 +75,18 @@ document.addEventListener('keydown', (event) => { // add check for keys that are
   // console.log("currentWord ==>", currentWord);
   // console.log("attemptNumber ==>", attemptNumber);
   
-  if(event.key === "Backspace" && prevTile) { // delete letter that are not the last letter
-    prevTile.setAttribute("letter", "");
-    prevTile.innerHTML = "";
-    currentWord = currentWord.slice(0, -1);
-  }
-
-  if(event.key === "Backspace" && !activeTile) { // last letter in row
-    const emptyLastTile = activeRow.querySelector(":nth-child(5)");
-    emptyLastTile.setAttribute("letter", "");
-    emptyLastTile.innerHTML = "";
-    currentWord = currentWord.slice(0, -1);
+  if(event.key === "Backspace") { //Todo Switch case for possible keys
+    return deletion(event.key, prevTile, activeTile, activeRow);
   }
 
   if(event.key === "Enter" && !activeTile) { // submiting word
-    console.log("Submiting word:", currentWord);
+    console.log("1. Submiting word:", currentWord);
     
     if(dictionary.includes(currentWord)) {
-      console.log("word is valid");
+      console.log("2. word is valid");
       
       if(currentWord === winningWord) {
-        console.log("YOU WIN");
+        console.log("3. YOU WIN");
         
         activeRow.querySelectorAll("[letter]").forEach(tile => {
           tile.style.backgroundColor = "green";
@@ -77,9 +94,11 @@ document.addEventListener('keydown', (event) => { // add check for keys that are
 
         activeRow.removeAttribute("active");
         
+        gameOver = true;
+
       } else {
-        if(attemptNumber !== 3) { // check if there are more rows to move to next attempt
-          console.log("word is not a match, moving to next row");
+        if(attemptNumber !== numberOfRows) { // check if there are more rows to move to next attempt
+          console.log("3. word is not a match, moving to next row");
           
           activeRow.querySelectorAll("[letter]").forEach(tile => {
             tile.style.backgroundColor = "grey";
@@ -120,14 +139,16 @@ document.addEventListener('keydown', (event) => { // add check for keys that are
             }
           }
           
-          console.log("word is not a match & no rows left, YOU LOSE");
+          console.log("3. word is not a match & no rows left, YOU LOSE");
 
           activeRow.removeAttribute("active");
+
+          gameOver = true;
         }
       }
 
     } else {
-      console.log("word is invalid, use a different word");
+      console.log("2. word is invalid, use a different word");
     }
   }
   
