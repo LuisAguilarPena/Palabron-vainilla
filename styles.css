@@ -1,0 +1,17 @@
+#board-container {
+  display: flex;
+  justify-content: center;
+}
+
+.row {
+  margin-bottom: 4px;
+  display: flex;
+}
+
+.tile {
+  text-align: center;
+  border: 2px solid #000;
+  margin: 0 2px;
+  height: 18px;
+  width: 14px;
+}
