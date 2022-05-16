@@ -62,7 +62,10 @@ const deletion = (key, prevTile, activeTile, activeRow) => {
 
 
 document.addEventListener('keydown', (event) => { // add check for keys that are not being used so nothing gets triggered
-  if(gameOver) return;
+  if(gameOver) {
+    console.log("Game over, please refresh to try again");
+    return;
+  }
 
   let activeRow = document.querySelector("[active]") 
   const activeTile = activeRow.querySelector("[letter='']")
