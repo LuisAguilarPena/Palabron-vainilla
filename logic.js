@@ -40,8 +40,6 @@ let gameOver = false;
 
 let attemptNumber = 1; // current attempt, number of attempts is number of rows
 
-
-
 //! Utility functions
 const deletion = (key, prevTile, activeTile, activeRow) => {
   // Delete letters that are not the last letter in the word
@@ -60,49 +58,28 @@ const deletion = (key, prevTile, activeTile, activeRow) => {
   }
 }
 
-
-document.addEventListener('keydown', (event) => { // add check for keys that are not being used so nothing gets triggered
-  if(gameOver) {
-    console.log("Game over, please refresh to try again");
-    return;
-  }
-
-  let activeRow = document.querySelector("[active]") 
-  const activeTile = activeRow.querySelector("[letter='']")
-  const prevTile = activeTile?.previousElementSibling; 
-  
-  // console.log("event ==>", event.key)
-  // console.log("activeRow ==>", activeRow)
-  // console.log("activeTile ==>", activeTile)
-  // console.log("prevTile ==>", prevTile)
-  // console.log("currentWord ==>", currentWord);
-  // console.log("attemptNumber ==>", attemptNumber);
-  
-  if(event.key === "Backspace") { //Todo Switch case for possible keys
-    return deletion(event.key, prevTile, activeTile, activeRow);
-  }
-
-  if(event.key === "Enter" && !activeTile) { // submiting word
+const submiting = (key, activeTile, activeRow) => {
+  if(key === "Enter" && !activeTile) {
     console.log("1. Submiting word:", currentWord);
-    
+
     if(dictionary.includes(currentWord)) {
       console.log("2. word is valid");
-      
+
       if(currentWord === winningWord) {
         console.log("3. YOU WIN");
-        
+
         activeRow.querySelectorAll("[letter]").forEach(tile => {
           tile.style.backgroundColor = "green";
         })
 
         activeRow.removeAttribute("active");
-        
+
         gameOver = true;
 
       } else {
         if(attemptNumber !== numberOfRows) { // check if there are more rows to move to next attempt
           console.log("3. word is not a match, moving to next row");
-          
+
           activeRow.querySelectorAll("[letter]").forEach(tile => {
             tile.style.backgroundColor = "grey";
           })
@@ -129,7 +106,7 @@ document.addEventListener('keydown', (event) => { // add check for keys that are
           activeRow.querySelectorAll("[letter]").forEach(tile => {
             tile.style.backgroundColor = "grey";
           })
-          
+
           for (let i = 0; i < currentWord.length; i++) {
             if (winningWord.includes(currentWord[i]) && winningWord.indexOf(currentWord[i], i) === i) {
               const tileToColor = activeRow.querySelectorAll(`[letter='${currentWord[i]}']`);
@@ -141,7 +118,7 @@ document.addEventListener('keydown', (event) => { // add check for keys that are
               tileToColor.style.backgroundColor = "yellow";
             }
           }
-          
+
           console.log("3. word is not a match & no rows left, YOU LOSE");
 
           activeRow.removeAttribute("active");
@@ -153,6 +130,32 @@ document.addEventListener('keydown', (event) => { // add check for keys that are
     } else {
       console.log("2. word is invalid, use a different word");
     }
+  }
+}
+
+document.addEventListener('keydown', (event) => { // add check for keys that are not being used so nothing gets triggered
+  if(gameOver) {
+    console.log("Game over, please refresh to try again");
+    return;
+  }
+
+  let activeRow = document.querySelector("[active]") 
+  const activeTile = activeRow.querySelector("[letter='']")
+  const prevTile = activeTile?.previousElementSibling; 
+  
+  // console.log("event ==>", event.key)
+  // console.log("activeRow ==>", activeRow)
+  // console.log("activeTile ==>", activeTile)
+  // console.log("prevTile ==>", prevTile)
+  // console.log("currentWord ==>", currentWord);
+  // console.log("attemptNumber ==>", attemptNumber);
+  
+  if(event.key === "Backspace") { //Todo Switch case for possible keys
+    return deletion(event.key, prevTile, activeTile, activeRow);
+  }
+
+  if(event.key === "Enter") {
+    return submiting(event.key, activeTile, activeRow);
   }
   
   if (activeTile) { // I need to only accept A-Z
